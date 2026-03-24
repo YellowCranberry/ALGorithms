@@ -1,0 +1,116 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNTeO4J+ewgnUk7eR15I1hO",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/YellowCranberry/ALGorithms/blob/main/computational%20linear%20algebra\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 33,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "8feksTFRHBcr",
+        "outputId": "14f1feff-3edc-4e36-caf2-025ebabfa8f0"
+      },
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "array([[18, 44, 85],\n",
+              "       [78, 99, 76]])"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 33
+        }
+      ],
+      "source": [
+        "import numpy as np\n",
+        "arr = np.random.randint(1,100,(2,3))\n",
+        "arr"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def svd(A,t):\n",
+        "  #cal ATA\n",
+        "  ATA = np.dot(A.T,A)\n",
+        "\n",
+        "  #calc eigen value and vectors\n",
+        "  ATA_eig_val, ATA_eig_vect = np.linalg.eigh(ATA)\n",
+        "\n",
+        "  # remove the nan and negative value due to floating point error\n",
+        "  ATA_eig_val[ATA_eig_val < t ] = 0\n",
+        "  ATA_eig_val[np.isnan(ATA_eig_val)]=0\n",
+        "  #calculate the Sigmas as its square root of the eig value matrix\n",
+        "  ATA_sigmas = np.sqrt(ATA_eig_val)\n",
+        "  ATA_sigma_matrix = np.diag(ATA_sigmas)\n",
+        "\n",
+        "  #now calc V , sigma inverse and A.v.sigmainv = U\n",
+        "  V = ATA_eig_vect\n",
+        "  sigma_inv = np.zeros_like(ATA_sigmas)\n",
+        "  mask = ATA_sigmas > t\n",
+        "  sigma_inv[mask] = 1 / ATA_sigmas[mask]\n",
+        "  U = A @ V @ np.diag(sigma_inv)\n",
+        "\n",
+        "  return U,ATA_sigma_matrix,V.T"
+      ],
+      "metadata": {
+        "id": "G1jUwqhzE3Uw"
+      },
+      "execution_count": 50,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "U ,S, Vt = svd(arr,1e-10)\n",
+        "print(U @ S @ Vt)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Pty3ll-zFccP",
+        "outputId": "7a44b518-f200-4f63-a6ef-38141b10713f"
+      },
+      "execution_count": 51,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[[18. 44. 85.]\n",
+            " [78. 99. 76.]]\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
